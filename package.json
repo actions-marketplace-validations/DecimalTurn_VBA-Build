@@ -1,0 +1,14 @@
+{
+  "name": "demo-office-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "office"
+  ],
+  "author": "DecimalTurn",
+  "license": "ISC"
+}
