@@ -26,7 +26,8 @@ jobs:
       #  run: choco install office365proplus
       - name: Run VBScript
         shell: cmd
-        run: cscript ./test.vbs
+        # To avoid displaying the header: run: cscript //nologo test.vbs
+        run: cscript ./test.vbs 
         
       # - run: |
       #    npm install -g mocha
