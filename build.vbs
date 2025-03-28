@@ -2,10 +2,13 @@
 ' Then it will open the Excel file and import the VBA code modules in the folder src/Modules
 ' The script will then save the file and close Excel.
 
-dim fso, zipFile, srcFolder, destFolder, excelApp, wb, newFileName
+dim fso, zipFile, srcFolder, destFolder, excelApp, wb, newFileName, cwd
+
+cwd = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
+WScript.Echo "Current working directory: " & cwd
+
 ' Set the source and destination folders
-srcFolder = "src\XMLSource"
-destFolder = "\"
+destFolder = cwd
 ' Create a FileSystemObject
 set fso = CreateObject("Scripting.FileSystemObject")
 
@@ -21,11 +24,13 @@ else
     WScript.Echo "Zip file not found: " & zipFile
     WScript.Quit 1
 end if
+
 ' Check if the destination folder exists
 if not fso.FolderExists(destFolder) then
     ' Create the destination folder
     fso.CreateFolder destFolder
 end if
+
 ' Move the renamed file to the destination folder
 if fso.FileExists("Excel_Skeleton.xlsm") then
     fso.MoveFile "Excel_Skeleton.xlsm", destFolder & "Excel_Skeleton.xlsm"
