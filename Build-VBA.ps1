@@ -24,6 +24,8 @@ $wb = $excelApp.Workbooks.Open($excelFile)
 # Define the module folder path
 $moduleFolder = Join-Path $currentDir "src\skeleton.xlsm\Modules"
 
+Write-Host "Module folder path: $moduleFolder"
+
 # Check if the module folder exists
 if (Test-Path $moduleFolder) {
     # Loop through each file in the module folder

@@ -71,7 +71,6 @@ function Enable-VBOM ($App) {
             Set-ItemProperty -Path $Path -Name AccessVBOM -Value 1 -ErrorAction Stop
             Write-Output "Successfully enabled AccessVBOM at $Path."
             $Found = $true
-            break
         }
         else {
             Write-Output "Registry path not found: $Path"
