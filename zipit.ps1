@@ -56,10 +56,10 @@ if (-not (Test-Path $absoluteSourceFolder)) {
 
 Write-Host "Changing directory to $absoluteSourceFolder..."
 cd $absoluteSourceFolder
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error: Failed to change directory to $absoluteSourceFolder"
-    exit $LASTEXITCODE
-}
+# if ($LASTEXITCODE -ne 0) {
+#     Write-Host "Error: Failed to change directory to $absoluteSourceFolder"
+#     exit $LASTEXITCODE
+# }
 
 # Compress the files and folders using 7-Zip
 Write-Host "Compressing files in $sourceFolder to $outputZipFile..."
