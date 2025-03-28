@@ -54,10 +54,21 @@ if (Test-Path $moduleFolder) {
                 } elseif ($accessVBOM.AccessVBOM -ne 1) {
                     Write-Host "Warning: AccessVBOM is not enabled. Please enable Access to the VBA project object model in Excel Trust Center settings."
                     exit 1
+                } elseif ($accessVBOM.AccessVBOM -eq 1) {
+                    Write-Host "AccessVBOM is enabled. Proceeding with import..."
                 }
 
             try {
-                $wb.VBProject.VBComponents.Import($_.FullName)
+                
+                $vbProject = $wb.VBProject
+                # Check if the VBProject is accessible
+                if ($null -eq $vbProject) {
+                    Write-Host "Error: Unable to access the VBProject. Please check your Excel settings."
+                    exit 1
+                }
+
+                $vbProject.VBComponents.Import($_.FullName)
+                
                 Write-Host "Successfully imported $($_.Name)"
             } catch {
                 Write-Host "Failed to import $($_.Name): $($_.Exception.Message)"
