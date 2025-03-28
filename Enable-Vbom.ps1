@@ -42,12 +42,13 @@ function Enable-VBOM ($App) {
     $CurVer = Get-ItemProperty -Path $AppKeyPath -ErrorAction Stop
     $Version = $CurVer.'(default)'.replace("$App.Application.", "") + ".0"
 
-    # Step 3: Check if the Office version registry key exists
-    $OfficePath = "HKCU:\Software\Microsoft\Office"
-    if (-not (Test-Path $OfficePath)) {
-        Write-Output "Error: The registry path '$OfficePath' does not exist."
-        return
-      }
+    # # Step 3: Check if the Office version registry key exists
+    # $OfficePath = "HKCU:\Software\Microsoft\Office"
+    # if (-not (Test-Path $OfficePath)) {
+    #     Write-Output "Error: The registry path '$OfficePath' does not exist."
+    #     return
+    # }
+
 
         # Recursively list all subkeys under the Office version key
         #List-RegistrySubKeysRecursively $OfficePath
@@ -72,19 +73,14 @@ function Enable-VBOM ($App) {
             $Found = $true
             break
         }
+        else {
+            Write-Output "Registry path not found: $Path"
+        }
     }
 
     if (-not $Found) {
         Write-Output "Error: None of the registry paths for AccessVBOM were found."
     }
-
-    # Step 5: Set the AccessVBOM property
-    Set-ItemProperty -Path $AppSecurityPath -Name AccessVBOM -Value 1 -ErrorAction Stop
-    Write-Output "Successfully enabled access to VBA project object model for $App."
-
-    # Print the value of AccessVBOM
-    $AccessVBOMValue = Get-ItemProperty -Path $AppSecurityPath -Name AccessVBOM -ErrorAction Stop
-    Write-Output "AccessVBOM value: $($AccessVBOMValue.AccessVBOM)"
 
 
   } Catch {
