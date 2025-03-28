@@ -1,15 +1,26 @@
-
 function List-RegistrySubKeysRecursively ($Path) {
     if (-not (Test-Path $Path)) {
         Write-Output "Error: The registry path '$Path' does not exist."
         return
     }
 
-    Write-Output "Subkeys under '$Path':"
+    Write-Output "Subkeys and entries under '$Path':"
     Try {
+        # List all subkeys
         $SubKeys = Get-ChildItem -Path $Path
         foreach ($SubKey in $SubKeys) {
-            Write-Output " - $($SubKey.PSChildName)"
+            Write-Output " - Subkey: $($SubKey.PSChildName)"
+
+            # List all registry entries (values) for the current subkey
+            Try {
+                $Entries = Get-ItemProperty -Path $SubKey.PSPath
+                foreach ($Entry in $Entries.PSObject.Properties) {
+                    Write-Output "   - Entry: $($Entry.Name) = $($Entry.Value)"
+                }
+            } Catch {
+                Write-Output "   Error accessing entries for subkey '$($SubKey.PSChildName)': $($_.Exception.Message)"
+            }
+
             # Recursively call the function for each subkey
             List-RegistrySubKeysRecursively $SubKey.PSPath
         }
