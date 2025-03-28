@@ -82,7 +82,10 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "Compression completed successfully. Zip file created at: $outputZipFile"
+Write-Host "Compression completed successfully. Zip file created at: $absoluteDestinationFolder"
+
+# Exit with code 0
+exit 0
 
 # Create a copy of the zip file in the src/skeleton.xlsm/XMLOutput folder at the /src level
 $copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
