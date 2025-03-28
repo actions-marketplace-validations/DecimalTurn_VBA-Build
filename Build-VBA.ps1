@@ -64,7 +64,7 @@ if (Test-Path $moduleFolder) {
                 if ($null -eq $vbProject) {
                      
                         # We Close the Excel application and re-open it
-                        Write-Host "VBProject is not accessible. Attempting to re-open Excel application... (Attempt $retryCount of $maxRetries)"
+                        Write-Host "VBProject is not accessible. Attempting to re-open Excel application..."
                         $excelApp.Quit()
                         Start-Sleep -Seconds 2
                         $excelApp = New-Object -ComObject Excel.Application
@@ -75,7 +75,7 @@ if (Test-Path $moduleFolder) {
                         if ($null -eq $vbProject) {
                             Write-Host "VBProject is still not accessible after re-opening Excel. Retrying..."
                             # Throw an error to trigger the catch block
-                            throw "VBProject is still not accessible."
+                            exit 1
                         } else {
                             Write-Host "VBProject is now accessible after re-opening Excel."
                         }

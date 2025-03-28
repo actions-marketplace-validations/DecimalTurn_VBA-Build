@@ -47,6 +47,11 @@ function Close-OfficeProcesses {
         }
     }
     
+    # Wait for a moment to ensure processes are closed
+    Start-Sleep -Seconds 15
+
+    Write-Host "Re-checking for any remaining Office processes..." -ForegroundColor Cyan
+
     # Check if any processes remain running
     $remainingProcesses = Get-Process | Where-Object { $officeProcesses -contains $_.Name }
     if ($remainingProcesses.Count -gt 0) {
