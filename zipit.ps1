@@ -47,13 +47,15 @@ if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
 }
 
-# Change the working directory to the source folder
 $absoluteSourceFolder = Resolve-Path -Path $sourceFolder
 if (-not (Test-Path $absoluteSourceFolder)) {
     Write-Host "Error: Source folder not found: $absoluteSourceFolder"
     exit 1
 }
 
+$absoluteDestinationFolder = Resolve-Path -Path $outputDir
+
+# Change the working directory to the source folder
 Write-Host "Changing directory to $absoluteSourceFolder..."
 cd $absoluteSourceFolder
 # if ($LASTEXITCODE -ne 0) {
@@ -61,9 +63,11 @@ cd $absoluteSourceFolder
 #     exit $LASTEXITCODE
 # }
 
+Write-Host "Current directory after change: $(Get-Location)"
+
 # Compress the files and folders using 7-Zip
-Write-Host "Compressing files in $sourceFolder to $outputZipFile..."
-& $sevenZipPath a -tzip "$outputZipFile" "*" | Out-Null
+Write-Host "Compressing files in $sourceFolder to $absoluteDestinationFolder..."
+& $sevenZipPath a -tzip "$absoluteDestinationFolder" "*" | Out-Null
 
 # Check if the compression was successful using $LASTEXITCODE
 if ($LASTEXITCODE -ne 0) {
