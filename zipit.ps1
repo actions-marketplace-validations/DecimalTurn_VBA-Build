@@ -9,8 +9,8 @@
 # This script uses 7-Zip to compress files and folders in the src/XMLSource directory into a zip file named skeleton.zip.
 
 # Define the source folder and the output zip file
-$sourceFolder = "src/XMLSource"
-$outputZipFile = "src/XMLOutput/skeleton.zip"
+$sourceFolder = "src/skeleton.xlsm/XMLSource"
+$outputZipFile = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
 
 # Path to the 7-Zip executable
 $sevenZipPath = "7z"  # Assumes 7-Zip is in the system PATH. Adjust if necessary.
