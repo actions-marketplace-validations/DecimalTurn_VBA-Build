@@ -31,34 +31,16 @@ jobs:
       #- name: "Run node script (zip extraction)"
       #  run: node ./zip.js
       # We need to zip the content of the follder src/XMLSource (it contains files and folders with subfolders)
-      - name: "Zip files with 7zip via powershell script named zipit.ps1"
+      - name: "Run PowerShell script (zip creation, enable VBOM and import VBA)"
         shell: pwsh
         run: | 
-          pwd
+          Write-Host "Current directory: $(pwd)"
+          Write-Host "Changing zip file name and location"
           . ./zipit.ps1
-      - name: "Enable VBOM"
-        shell: pwsh
-        run: . ./enable-Vbom.ps1
-        # run: |
-        #   # Enable VBOM (Visual Basic for Applications Object Model) programmatically
-        #   # https://learn.microsoft.com/en-us/office/vba/excel/concepts/getting-started/enable-the-vbom-programmatically
-        #   $excel = New-Object -ComObject Excel.Application
-        #   $excel.AutomationSecurity = 3 # msoAutomationSecurityForceDisable
-        #   $excel.Visible = $false
-        #   $excel.Workbooks.Add()
-        #   $excel.ActiveWorkbook.VBProject.VBComponents.Item(1).Export("C:\Users\runneradmin\AppData\Local\Temp\test.vbs")
-        #   $excel.Quit()
-      - name: Run VBScript
-        shell: cmd
-        # To avoid displaying the header: run: cscript //nologo test.vbs
-        run: cscript ./build.vbs 
-        #run: cscript ./file-creation.vbs 
-        
-      # - run: |
-      #    npm install -g mocha
-      #    # mocha --expose-gc test  # Three tests will fail!
-      #- run: npm test
-
+          Write-Host "Enabling VBOM (Visual Basic for Applications Object Model)"
+          . ./enable-Vbom.ps1
+          Write-Host "Importing VBA code"
+          . ./Build-VBA.ps1
       - name: Push content
         run: |
           git config user.name "github-actions[bot]"
