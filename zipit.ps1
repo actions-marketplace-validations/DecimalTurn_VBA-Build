@@ -48,9 +48,16 @@ if (-not (Test-Path $outputDir)) {
 }
 
 # Change the working directory to the source folder
-Set-Location -Path $sourceFolder
+$absoluteSourceFolder = Resolve-Path -Path $sourceFolder
+if (-not (Test-Path $absoluteSourceFolder)) {
+    Write-Host "Error: Source folder not found: $absoluteSourceFolder"
+    exit 1
+}
+
+Write-Host "Changing directory to $absoluteSourceFolder..."
+Set-Location -Path $absoluteSourceFolder
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error: Failed to change directory to $sourceFolder"
+    Write-Host "Error: Failed to change directory to $absoluteSourceFolder"
     exit $LASTEXITCODE
 }
 
