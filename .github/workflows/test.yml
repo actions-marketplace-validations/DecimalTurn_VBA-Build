@@ -35,7 +35,7 @@ jobs:
         shell: pwsh
         run: | 
           pwd
-          . \zipit.ps1         
+          . ./zipit.ps1         
       - name: Run VBScript
         shell: cmd
         # To avoid displaying the header: run: cscript //nologo test.vbs
