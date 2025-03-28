@@ -36,7 +36,32 @@ if (Test-Path $moduleFolder) {
         $basFiles | ForEach-Object {
             Write-Host "Importing $($_.Name)..."
             # Import the module into the workbook
-            $wb.VBProject.VBComponents.Import($_.FullName)
+
+                # Before making the change, double-ckeck if the VBOM is enabled
+                # HKCU:\Software\Microsoft\Office\16.0\Common\TrustCenter
+                # Just check the registry entry
+                $regPath = "HKCU:\Software\Microsoft\Office\16.0\Common\TrustCenter"
+                if (-not (Test-Path $regPath)) {
+                    Write-Host "Warning: Registry path not found: $regPath"
+                    Write-Host "Please enable Access to the VBA project object model in Excel Trust Center settings."
+                    exit 1
+                }
+                # Check if the AccessVBOM property is set to 1
+                $accessVBOM = Get-ItemProperty -Path $regPath -Name AccessVBOM -ErrorAction SilentlyContinue
+                if ($null -eq $accessVBOM) {
+                    Write-Host "Warning: AccessVBOM property not found. Please enable Access to the VBA project object model in Excel Trust Center settings."
+                    exit 1
+                } elseif ($accessVBOM.AccessVBOM -ne 1) {
+                    Write-Host "Warning: AccessVBOM is not enabled. Please enable Access to the VBA project object model in Excel Trust Center settings."
+                    exit 1
+                }
+
+            try {
+                $wb.VBProject.VBComponents.Import($_.FullName)
+                Write-Host "Successfully imported $($_.Name)"
+            } catch {
+                Write-Host "Failed to import $($_.Name): $($_.Exception.Message)"
+            }
         }
     } else {
         Write-Host "Warning: No .bas files found in $moduleFolder"
