@@ -10,5 +10,8 @@
     "office"
   ],
   "author": "DecimalTurn",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jszip": "^3.10.1"
+  }
 }
