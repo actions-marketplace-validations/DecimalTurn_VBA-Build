@@ -4,7 +4,6 @@
 # and imports all .bas files from a specified module folder into the workbook.
 # It then saves and closes the workbook, and cleans up the COM objects.
 
-
 # Get the current working directory
 $currentDir = (Get-Location).Path
 Write-Host "Current working directory: $currentDir"
@@ -63,8 +62,23 @@ if (Test-Path $moduleFolder) {
                 $vbProject = $wb.VBProject
                 # Check if the VBProject is accessible
                 if ($null -eq $vbProject) {
-                    Write-Host "Error: Unable to access the VBProject. Please check your Excel settings."
-                    exit 1
+                     
+                        # We Close the Excel application and re-open it
+                        Write-Host "VBProject is not accessible. Attempting to re-open Excel application... (Attempt $retryCount of $maxRetries)"
+                        $excelApp.Quit()
+                        Start-Sleep -Seconds 2
+                        $excelApp = New-Object -ComObject Excel.Application
+                        $wb = $excelApp.Workbooks.Open($excelFile)
+                        
+                        $vbProject = $wb.VBProject
+
+                        if ($null -eq $vbProject) {
+                            Write-Host "VBProject is still not accessible after re-opening Excel. Retrying..."
+                            # Throw an error to trigger the catch block
+                            throw "VBProject is still not accessible."
+                        } else {
+                            Write-Host "VBProject is now accessible after re-opening Excel."
+                        }
                 }
 
                 $vbProject.VBComponents.Import($_.FullName)
