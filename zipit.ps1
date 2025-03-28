@@ -55,7 +55,7 @@ if (-not (Test-Path $absoluteSourceFolder)) {
 }
 
 Write-Host "Changing directory to $absoluteSourceFolder..."
-Set-Location -Path $absoluteSourceFolder
+cd $absoluteSourceFolder
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Error: Failed to change directory to $absoluteSourceFolder"
     exit $LASTEXITCODE
