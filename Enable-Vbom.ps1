@@ -24,6 +24,34 @@ function Enable-VBOM ($App) {
       return
     }
 
+        # List all the subkeys under the Office version key
+        $SubKeys = Get-ChildItem -Path $OfficeKeyPath
+        if ($SubKeys.Count -eq 0) {
+        Write-Output "Error: No subkeys found under '$OfficeKeyPath'."
+        return
+        }
+        Write-Output "Subkeys under '$OfficeKeyPath':"
+        foreach ($SubKey in $SubKeys) {
+        Write-Output " - $($SubKey.PSChildName)"
+        }
+
+    $AppPath = "$OfficeKeyPath\$App"
+    if (-not (Test-Path $AppSecurityPath)) {
+      Write-Output "Error: The registry path '$AppPath' does not exist."
+      return
+    }
+
+        # List all the subkeys under the application key
+        $AppSubKeys = Get-ChildItem -Path $AppPath
+        if ($AppSubKeys.Count -eq 0) {
+        Write-Output "Error: No subkeys found under '$AppPath'."
+        return
+        }
+        Write-Output "Subkeys under '$AppPath':"
+        foreach ($AppSubKey in $AppSubKeys) {
+        Write-Output " - $($AppSubKey.PSChildName)"
+        }
+
     # Step 4: Check if the application-specific key exists
     $AppSecurityPath = "$OfficeKeyPath\$App\Security"
     if (-not (Test-Path $AppSecurityPath)) {
