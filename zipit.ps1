@@ -67,7 +67,7 @@ Write-Host "Current directory after change: $(Get-Location)"
 
 # Compress the files and folders using 7-Zip
 Write-Host "Compressing files in $sourceFolder to $absoluteDestinationFolder..."
-& $sevenZipPath a -tzip "$absoluteDestinationFolder" "*" | Out-Null
+& $sevenZipPath a -tzip "$absoluteDestinationFolder/skeleton.zip" "*" | Out-Null
 
 # Check if the compression was successful using $LASTEXITCODE
 if ($LASTEXITCODE -ne 0) {
@@ -84,8 +84,6 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Compression completed successfully. Zip file created at: $absoluteDestinationFolder"
 
-# Exit with code 0
-exit 0
 
 # Create a copy of the zip file in the src/skeleton.xlsm/XMLOutput folder at the /src level
 $copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
