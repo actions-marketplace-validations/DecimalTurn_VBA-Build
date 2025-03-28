@@ -56,24 +56,16 @@ Write-Host "Compression completed successfully. Zip file created at: $outputZipF
 
 # Create a copy of the zip file in the src/skeleton.xlsm/XMLOutput folder at the /src level
 $copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
-$copyDestination = "src"
-
-# Just perform the copy
-Write-Host "Copying $copySource to $copyDestination..."
-Copy-Item -Path $copySource -Destination $copyDestination -Force
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error: Copy failed with exit code $LASTEXITCODE"
-    exit $LASTEXITCODE
-}
-
-# Rename src/skeleton.zip to src/skeleton.xlsm
-$renameSource = "src/skeleton.zip"
 $renameDestination = "src/skeleton.xlsm"
-# Just perform the rename
-Write-Host "Renaming $renameSource to $renameDestination..."
-Rename-Item -Path $renameSource -NewName $renameDestination -Force
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error: Rename failed with exit code $LASTEXITCODE"
-    exit $LASTEXITCODE
+
+# Copy and rename the file in one step
+Write-Host "Copying and renaming $copySource to $renameDestination..."
+Copy-Item -Path $copySource -Destination $renameDestination -Force
+
+# Verify if the file exists after the copy
+if (-not (Test-Path $renameDestination)) {
+    Write-Host "Error: File not found after copy: $renameDestination"
+    exit 1
 }
-Write-Host "Renaming completed successfully. Zip file renamed to: $renameDestination"
+
+Write-Host "File successfully copied and renamed to: $renameDestination"
