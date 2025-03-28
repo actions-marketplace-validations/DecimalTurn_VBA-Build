@@ -58,18 +58,8 @@ function Enable-VBOM ($App) {
       return
     }
 
-
-
-    $CommonPath = "$OfficeKeyPath\Common\"
-
-    $AppPath = "$CommonPath\$App"
-    if (-not (Test-Path $AppSecurityPath)) {
-      Write-Output "Error: The registry path '$AppPath' does not exist."
-      return
-    }
-
     # Step 4: Check if the application-specific key exists
-    $AppSecurityPath = "$OfficeKeyPath\$App\Security"
+    $AppSecurityPath = "$OfficeKeyPath\Common\TrustCenter"
     if (-not (Test-Path $AppSecurityPath)) {
       Write-Output "Error: The registry path '$AppSecurityPath' does not exist."
       return
