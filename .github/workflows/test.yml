@@ -34,3 +34,13 @@ jobs:
       #    npm install -g mocha
       #    # mocha --expose-gc test  # Three tests will fail!
       #- run: npm test
+
+      - name: Push content
+        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 #v5.0.1
+        with:
+          # Optional. Commit message for the created commit.
+          # Defaults to "Apply automatic changes"
+          commit_message: "Enforce CRLF\n\nGitHub Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # Optional commit user and author settings
+          commit_user_name: github-actions[bot] # defaults to "github-actions[bot]"
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
