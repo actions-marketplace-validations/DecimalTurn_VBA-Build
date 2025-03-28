@@ -40,7 +40,7 @@ WScript.Echo "Current working directory: " & cwd
 ' end if
 
 dim excelFile
-excelFile = "src/skeleton.xlsm"
+excelFile = "skeleton.xlsm"
 
 ' Create a new Excel application
 set excelApp = CreateObject("Excel.Application")
@@ -51,7 +51,7 @@ set wb = excelApp.Workbooks.Open(excelFile)
 
 ' Import the VBA code modules from the src/Modules folder
 dim moduleFolder, moduleFile
-moduleFolder = "src\Modules"
+moduleFolder = "src\skeleton.xlsm\Modules"
 ' Check if the module folder exists
 if fso.FolderExists(moduleFolder) then
     ' Loop through each file in the module folder
