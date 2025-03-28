@@ -22,7 +22,7 @@ const addFolderToZip = (folderPath, zipFolder) => {
 };
 
 // Add folders to the zip
-const xlFolder = "src/skeleton.xlsm/XMLsource/xl";
+let xlFolder = "src/skeleton.xlsm/XMLsource/xl";
 addFolderToZip(xlFolder, zip.folder("xl"));
 
 xlFolder = "src/skeleton.xlsm/XMLsource/docProps";
