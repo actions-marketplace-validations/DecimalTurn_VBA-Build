@@ -18,11 +18,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
+      #- uses: actions/setup-node@v4
+      #  with:
+      #    node-version: ${{ matrix.node-version }}
+      #- run: npm ci
+      #- run: npm run build --if-present
       - name: "Install 7zip"
         run: choco install 7zip.install
       # https://community.chocolatey.org/packages?q=Excel
@@ -33,7 +33,9 @@ jobs:
       # We need to zip the content of the follder src/XMLSource (it contains files and folders with subfolders)
       - name: "Zip files with 7zip via powershell script named zipit.ps1"
         shell: pwsh
-        run: . \zipit.ps1         
+        run: | 
+          pwd
+          . \zipit.ps1         
       - name: Run VBScript
         shell: cmd
         # To avoid displaying the header: run: cscript //nologo test.vbs
