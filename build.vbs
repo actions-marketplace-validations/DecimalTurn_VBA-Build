@@ -39,8 +39,10 @@ WScript.Echo "Current working directory: " & cwd
 '     WScript.Quit 1
 ' end if
 
-dim excelFile
-excelFile = "skeleton.xlsm"
+
+dim excelFile, currentDir
+currentDir = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
+excelFile = currentDir & "\skeleton.xlsm"
 
 ' Create a new Excel application
 set excelApp = CreateObject("Excel.Application")
