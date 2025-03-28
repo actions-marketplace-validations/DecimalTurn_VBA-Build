@@ -33,18 +33,6 @@ else
     WScript.Echo "File not found: Excel_Skeleton.xlsm"
     WScript.Quit 1
 end if
-' Check if the destination folder exists
-if not fso.FolderExists(destFolder) then
-    ' Create the destination folder
-    fso.CreateFolder destFolder
-end if
-' Move the renamed file to the destination folder
-if fso.FileExists("Excel_Skeleton.xlsm") then
-    fso.MoveFile "Excel_Skeleton.xlsm", newFileName
-else
-    WScript.Echo "File not found: Excel_Skeleton.xlsm"
-    WScript.Quit 1
-end if
 
 ' Create a new Excel application
 set excelApp = CreateObject("Excel.Application")
