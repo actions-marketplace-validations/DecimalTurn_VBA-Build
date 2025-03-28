@@ -35,7 +35,20 @@ function Enable-VBOM ($App) {
         Write-Output " - $($SubKey.PSChildName)"
         }
 
-    $AppPath = "$OfficeKeyPath\$App"
+    $CommonPath = "$OfficeKeyPath\Common\"
+
+        # List all the subkeys
+        $SubKeys = Get-ChildItem -Path $CommonPath
+        if ($SubKeys.Count -eq 0) {
+        Write-Output "Error: No subkeys found under '$CommonPath'."
+        return
+        }
+        Write-Output "Subkeys under '$CommonPath':"
+        foreach ($SubKey in $SubKeys) {
+        Write-Output " - $($SubKey.PSChildName)"
+        }
+
+    $AppPath = "$CommonPath\$App"
     if (-not (Test-Path $AppSecurityPath)) {
       Write-Output "Error: The registry path '$AppPath' does not exist."
       return
