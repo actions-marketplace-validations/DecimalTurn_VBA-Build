@@ -44,7 +44,7 @@ if (-not (Test-Path $outputDir)) {
 
 # Compress the files and folders using 7-Zip
 Write-Host "Compressing files in $sourceFolder to $outputZipFile..."
-& $sevenZipPath a -tzip "$outputZipFile" "$sourceFolder\*" | Out-Null
+& $sevenZipPath a -tzip "$outputZipFile" "$sourceFolder/*" | Out-Null
 
 # Check if the compression was successful using $LASTEXITCODE
 if ($LASTEXITCODE -ne 0) {
@@ -56,7 +56,7 @@ Write-Host "Compression completed successfully. Zip file created at: $outputZipF
 
 # Create a copy of the zip file in the src/skeleton.xlsm/XMLOutput folder at the /src level
 $copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
-$copyDestination = "src/skeleton.xlsm"
+$copyDestination = "src"
 
 # Just perform the copy
 Write-Host "Copying $copySource to $copyDestination..."
@@ -65,3 +65,15 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Error: Copy failed with exit code $LASTEXITCODE"
     exit $LASTEXITCODE
 }
+
+# Rename src/skeleton.zip to src/skeleton.xlsm
+$renameSource = "src/skeleton.zip"
+$renameDestination = "src/skeleton.xlsm"
+# Just perform the rename
+Write-Host "Renaming $renameSource to $renameDestination..."
+Rename-Item -Path $renameSource -NewName $renameDestination -Force
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Rename failed with exit code $LASTEXITCODE"
+    exit $LASTEXITCODE
+}
+Write-Host "Renaming completed successfully. Zip file renamed to: $renameDestination"
