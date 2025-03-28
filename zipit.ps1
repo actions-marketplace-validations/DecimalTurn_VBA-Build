@@ -10,7 +10,7 @@
 
 Write-Host "Staring the compression process..."
 
-currentDir = Get-Location
+$currentDir = Get-Location
 Write-Host "Current directory: $currentDir"
 
 # Define the source folder and the output zip file
