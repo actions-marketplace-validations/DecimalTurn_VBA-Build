@@ -22,12 +22,13 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       # https://community.chocolatey.org/packages?q=Excel
-      - name: "Installing Office 365 takes about 5 minutes..."
-        run: choco install office365proplus
+      #- name: "Installing Office 365 takes about 5 minutes..."
+      #  run: choco install office365proplus
       - name: Run VBScript
         shell: cmd
         # To avoid displaying the header: run: cscript //nologo test.vbs
-        run: cscript ./test.vbs 
+        #run: cscript ./test.vbs 
+        run: cscript ./file-creation.vbs 
         
       # - run: |
       #    npm install -g mocha
