@@ -28,10 +28,18 @@ Write-Host "Module folder path: $moduleFolder"
 
 # Check if the module folder exists
 if (Test-Path $moduleFolder) {
-    # Loop through each file in the module folder
-    Get-ChildItem -Path $moduleFolder -Filter *.bas | ForEach-Object {
-        # Import the module into the workbook
-        $wb.VBProject.VBComponents.Import($_.FullName)
+    # First check if there are any .bas files
+    $basFiles = Get-ChildItem -Path $moduleFolder -Filter *.bas
+    if ($basFiles.Count -gt 0) {
+        Write-Host "Found $($basFiles.Count) .bas files to import"
+        # Loop through each file in the module folder
+        $basFiles | ForEach-Object {
+            Write-Host "Importing $($_.Name)..."
+            # Import the module into the workbook
+            $wb.VBProject.VBComponents.Import($_.FullName)
+        }
+    } else {
+        Write-Host "Warning: No .bas files found in $moduleFolder"
     }
 } else {
     Write-Host "Module folder not found: $moduleFolder"

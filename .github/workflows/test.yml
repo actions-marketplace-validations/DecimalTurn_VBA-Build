@@ -36,9 +36,11 @@ jobs:
         run: | 
           Write-Host "Current directory: $(pwd)"
           Write-Host "Changing zip file name and location"
-          . ./zipit.ps1
+          . ./Zip-It.ps1
+          Write-Host "========================="
           Write-Host "Enabling VBOM (Visual Basic for Applications Object Model)"
-          . ./enable-Vbom.ps1
+          . ./Enable-VBOM.ps1
+          Write-Host "========================="
           Write-Host "Importing VBA code"
           . ./Build-VBA.ps1
       - name: Push content
