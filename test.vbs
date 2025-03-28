@@ -12,9 +12,12 @@ set wb = excel.Workbooks.Add()
 
 wb.Sheets(1).Cells(2, 1).Value = "Hello, World!"
 
-wb.SaveAs "C:\path\to\your\file.xlsx"
+wb.SaveAs "D:\a\Demo-Office-CLI\Demo-Office-CLI\example.xlsx"
 
+wb.Close SaveChanges = false
+excel.Quit
 
-
+' Clean up
+set wb = nothing
 set excel = nothing
 
