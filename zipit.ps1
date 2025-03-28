@@ -89,6 +89,12 @@ Write-Host "Compression completed successfully. Zip file created at: $absoluteDe
 $copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
 $renameDestination = "./skeleton.xlsm"
 
+# Delete the destination file if it exists
+if (Test-Path $renameDestination) {
+    Write-Host "Deleting existing file: $renameDestination"
+    Remove-Item -Path $renameDestination -Force
+}
+
 # Copy and rename the file in one step
 Write-Host "Copying and renaming $copySource to $renameDestination..."
 Copy-Item -Path $copySource -Destination $renameDestination -Force
