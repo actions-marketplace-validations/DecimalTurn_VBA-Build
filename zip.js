@@ -33,6 +33,9 @@ addFolderToZip(xlFolder, zip.folder("_rels"));
 
 // Generate the zip file
 zip.generateAsync({ type: "nodebuffer" }).then((content) => {
-  fs.writeFileSync("Excel_Skeleton.zip", content);
+  fs.writeFileSync("./Excel_Skeleton.zip", content);
   console.log("Zip file created: Excel_Skeleton.zip");
 });
+
+//pwd
+console.log("Current working directory:", process.cwd());
