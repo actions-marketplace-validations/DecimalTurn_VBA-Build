@@ -17,6 +17,11 @@ $excelApp = New-Object -ComObject Excel.Application
 # Open the workbook
 $wb = $excelApp.Workbooks.Open($excelFile)
 
+# Check if the workbook is opened successfully
+if ($null -eq $wb) {
+    Write-Host "Error: Failed to open the workbook: $excelFile"
+    exit 1
+}
 # Make Excel visible (uncomment if needed)
 # $excelApp.Visible = $true
 
