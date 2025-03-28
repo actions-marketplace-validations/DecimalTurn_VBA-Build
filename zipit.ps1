@@ -53,3 +53,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Compression completed successfully. Zip file created at: $outputZipFile"
+
+# Create a copy of the zip file in the src/skeleton.xlsm/XMLOutput folder at the /src level
+$copySource = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
+$copyDestination = "src/skeleton.xlsm"
+
+# Just perform the copy
+Write-Host "Copying $copySource to $copyDestination..."
+Copy-Item -Path $copySource -Destination $copyDestination -Force
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Copy failed with exit code $LASTEXITCODE"
+    exit $LASTEXITCODE
+}

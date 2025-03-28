@@ -7,23 +7,23 @@ dim fso, zipFile, srcFolder, destFolder, excelApp, wb, newFileName, cwd
 cwd = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
 WScript.Echo "Current working directory: " & cwd
 
-' Set the source and destination folders
-destFolder = cwd
-' Create a FileSystemObject
-set fso = CreateObject("Scripting.FileSystemObject")
+' ' Set the source and destination folders
+' destFolder = cwd
+' ' Create a FileSystemObject
+' set fso = CreateObject("Scripting.FileSystemObject")
 
-'Rename the file from Excel_Skeleton.zip in the current dir to Excel_Skeleton.xlsm
-zipFile = "Excel_Skeleton.zip"
-newFileName = destFolder & "Excel_Skeleton.xlsm"
+' 'Rename the file from Excel_Skeleton.zip in the current dir to Excel_Skeleton.xlsm
+' zipFile = "Excel_Skeleton.zip"
+' newFileName = destFolder & "Excel_Skeleton.xlsm"
 
-' Check if the zip file exists if yes rename it to .xlsm
-if fso.FileExists(zipFile) then
-    ' Rename the zip file to .xlsm
-    fso.MoveFile zipFile, "Excel_Skeleton.xlsm"
-else
-    WScript.Echo "Zip file not found: " & zipFile
-    WScript.Quit 1
-end if
+' ' Check if the zip file exists if yes rename it to .xlsm
+' if fso.FileExists(zipFile) then
+'     ' Rename the zip file to .xlsm
+'     fso.MoveFile zipFile, "Excel_Skeleton.xlsm"
+' else
+'     WScript.Echo "Zip file not found: " & zipFile
+'     WScript.Quit 1
+' end if
 
 ' ' Check if the destination folder exists
 ' if not fso.FolderExists(destFolder) then
@@ -39,10 +39,13 @@ end if
 '     WScript.Quit 1
 ' end if
 
+dim excelFile
+excelFile = "src/skeleton.xlsm"
+
 ' Create a new Excel application
 set excelApp = CreateObject("Excel.Application")
 ' Create a new workbook
-set wb = excelApp.Workbooks.Open(newFileName)
+set wb = excelApp.Workbooks.Open(excelFile)
 ' Make Excel visible
 'excelApp.Visible = true
 
