@@ -35,14 +35,7 @@ function Close-OfficeProcesses {
     foreach ($process in $runningProcesses) {
         Write-Host "  - $($process.Name) (PID: $($process.Id))" -ForegroundColor Yellow
     }
-    
-    # Ask for confirmation
-    $confirmation = Read-Host "`nDo you want to close these Office processes? (Y/N)"
-    if ($confirmation -ne 'Y' -and $confirmation -ne 'y') {
-        Write-Host "Operation cancelled." -ForegroundColor Cyan
-        return
-    }
-    
+   
     Write-Host "Closing Office processes..." -ForegroundColor Cyan
     foreach ($process in $runningProcesses) {
         try {
