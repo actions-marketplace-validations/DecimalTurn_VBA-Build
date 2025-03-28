@@ -26,18 +26,30 @@ if (-not (Test-Path $sourceFolder)) {
 # Ensure the destination directory exists
 $outputDir = Split-Path -Path $outputZipFile
 if (-not (Test-Path $outputDir)) {
+    Write-Host "Creating output directory: $outputDir"
+    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+}
+
+if (-not (Test-Path $sourceFolder)) {
+    Write-Host "Source folder not found: $sourceFolder"
+    exit 1
+}
+
+# Ensure the destination directory exists
+$outputDir = Split-Path -Path $outputZipFile
+if (-not (Test-Path $outputDir)) {
+    Write-Host "Creating output directory: $outputDir"
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
 }
 
 # Compress the files and folders using 7-Zip
 Write-Host "Compressing files in $sourceFolder to $outputZipFile..."
-$command = "$sevenZipPath a -tzip `"$outputZipFile`" `"$sourceFolder\*`""
-$exitCode = Invoke-Expression $command
+& $sevenZipPath a -tzip "$outputZipFile" "$sourceFolder\*" | Out-Null
 
-# Check if the compression was successful
-if ($exitCode -ne 0) {
-    Write-Host "Error: Compression failed with exit code $exitCode"
-    exit 1
+# Check if the compression was successful using $LASTEXITCODE
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Compression failed with exit code $LASTEXITCODE"
+    exit $LASTEXITCODE
 }
 
 Write-Host "Compression completed successfully. Zip file created at: $outputZipFile"
