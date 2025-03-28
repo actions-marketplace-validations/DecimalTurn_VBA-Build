@@ -14,7 +14,7 @@ $currentDir = Get-Location
 Write-Host "Current directory: $currentDir"
 
 # Define the source folder and the output zip file
-$sourceFolder = "src/skeleton.xlsm/XMLSource"
+$sourceFolder = "src/skeleton.xlsm/XMLSource/"
 $outputZipFile = "src/skeleton.xlsm/XMLOutput/skeleton.zip"
 
 # Path to the 7-Zip executable
@@ -28,6 +28,8 @@ if (-not (Test-Path $sourceFolder)) {
 
 # Ensure the destination directory exists
 $outputDir = Split-Path -Path $outputZipFile
+Write-Host "Output directory: $outputDir"
+
 if (-not (Test-Path $outputDir)) {
     Write-Host "Creating output directory: $outputDir"
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
