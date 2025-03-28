@@ -38,14 +38,16 @@ function Enable-VBOM ($App) {
         return
       }
 
+        # Recursively list all subkeys under the Office version key
+        List-RegistrySubKeysRecursively $OfficePath
+
     $OfficeKeyPath = "HKCU:\Software\Microsoft\Office\$Version"
     if (-not (Test-Path $OfficeKeyPath)) {
       Write-Output "Error: The registry path '$OfficeKeyPath' does not exist."
       return
     }
 
-        # Recursively list all subkeys under the Office version key
-        List-RegistrySubKeysRecursively $OfficeKeyPath
+
 
     $CommonPath = "$OfficeKeyPath\Common\"
 
