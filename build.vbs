@@ -6,11 +6,10 @@ dim fso, zipFile, srcFolder, destFolder, excelApp, wb, newFileName, cwd
 
 cwd = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
 WScript.Echo "Current working directory: " & cwd
+set fso = CreateObject("Scripting.FileSystemObject")
 
 ' ' Set the source and destination folders
 ' destFolder = cwd
-' ' Create a FileSystemObject
-' set fso = CreateObject("Scripting.FileSystemObject")
 
 ' 'Rename the file from Excel_Skeleton.zip in the current dir to Excel_Skeleton.xlsm
 ' zipFile = "Excel_Skeleton.zip"
@@ -53,7 +52,7 @@ set wb = excelApp.Workbooks.Open(excelFile)
 
 ' Import the VBA code modules from the src/Modules folder
 dim moduleFolder, moduleFile
-moduleFolder = "src\skeleton.xlsm\Modules"
+moduleFolder = currentDir & "\src\skeleton.xlsm\Modules"
 ' Check if the module folder exists
 if fso.FolderExists(moduleFolder) then
     ' Loop through each file in the module folder
