@@ -1,5 +1,4 @@
-'This script will zip the content of src/XMLSource then rename the zip file to have .xlsm extension
-' and move it to the destination folder.
+'This script will take the zip file, rename it to .xlsm, and move it to the destination folder.
 ' Then it will open the Excel file and import the VBA code modules in the folder src/Modules
 ' The script will then save the file and close Excel.
 
@@ -9,23 +8,6 @@ srcFolder = "src\XMLSource"
 destFolder = "\"
 ' Create a FileSystemObject
 set fso = CreateObject("Scripting.FileSystemObject")
-
-' Zip the source folder by running node zip.js
-' This assumes you have Node.js installed and the zip.js script is in the same directory
-dim shell, exitCode
-set shell = CreateObject("WScript.Shell")
-
-' Run the Node.js script and capture the exit code
-exitCode = shell.Run("node zip.js", 0, True)
-
-' Check if the Node.js script executed successfully
-if exitCode <> 0 then
-    WScript.Echo "Error: Failed to execute zip.js. Exit code: " & exitCode
-    WScript.Quit 1
-end if
-
-' Clean up
-set shell = nothing
 
 'Rename the file from Excel_Skeleton.zip in the current dir to Excel_Skeleton.xlsm
 zipFile = "Excel_Skeleton.zip"
@@ -63,8 +45,6 @@ else
     WScript.Echo "File not found: Excel_Skeleton.xlsm"
     WScript.Quit 1
 end if
-
-
 
 ' Create a new Excel application
 set excelApp = CreateObject("Excel.Application")
