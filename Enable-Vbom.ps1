@@ -50,24 +50,43 @@ function Enable-VBOM ($App) {
       }
 
         # Recursively list all subkeys under the Office version key
-        List-RegistrySubKeysRecursively $OfficePath
+        #List-RegistrySubKeysRecursively $OfficePath
 
-    $OfficeKeyPath = "HKCU:\Software\Microsoft\Office\$Version"
-    if (-not (Test-Path $OfficeKeyPath)) {
-      Write-Output "Error: The registry path '$OfficeKeyPath' does not exist."
-      return
+    # Define possible paths for AccessVBOM
+    $Paths = @(
+        "HKCU:\Software\Microsoft\Office\$Version\$App\Security",
+        "HKLM:\Software\Microsoft\Office\$Version\$App\Security",
+        "HKLM:\Software\WOW6432Node\Microsoft\Office\$Version\$App\Security",
+        "HKCU:\Software\Microsoft\Office\$Version\Common\TrustCenter",
+        "HKLM:\Software\Microsoft\Office\$Version\Common\TrustCenter"
+    )
+
+    # Check each path
+    $Found = $false
+    foreach ($Path in $Paths) {
+        if (Test-Path $Path) {
+            Write-Output "Found registry path: $Path"
+            # Set the AccessVBOM property
+            Set-ItemProperty -Path $Path -Name AccessVBOM -Value 1 -ErrorAction Stop
+            Write-Output "Successfully enabled AccessVBOM at $Path."
+            $Found = $true
+            break
+        }
     }
 
-    # Step 4: Check if the application-specific key exists
-    $AppSecurityPath = "$OfficeKeyPath\Common\TrustCenter"
-    if (-not (Test-Path $AppSecurityPath)) {
-      Write-Output "Error: The registry path '$AppSecurityPath' does not exist."
-      return
+    if (-not $Found) {
+        Write-Output "Error: None of the registry paths for AccessVBOM were found."
     }
 
     # Step 5: Set the AccessVBOM property
     Set-ItemProperty -Path $AppSecurityPath -Name AccessVBOM -Value 1 -ErrorAction Stop
     Write-Output "Successfully enabled access to VBA project object model for $App."
+
+    # Print the value of AccessVBOM
+    $AccessVBOMValue = Get-ItemProperty -Path $AppSecurityPath -Name AccessVBOM -ErrorAction Stop
+    Write-Output "AccessVBOM value: $($AccessVBOMValue.AccessVBOM)"
+
+
   } Catch {
     Write-Output "Failed to enable access to VBA project object model for $App."
     Write-Output "Error: $($_.Exception.Message)"
