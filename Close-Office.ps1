@@ -56,14 +56,44 @@ function Close-OfficeProcesses {
     $remainingProcesses = Get-Process | Where-Object { $officeProcesses -contains $_.Name }
     if ($remainingProcesses.Count -gt 0) {
         Write-Host "`nWARNING: $($remainingProcesses.Count) Office processes could not be closed:" -ForegroundColor Red
+        # Let's try a second time to close them
         foreach ($process in $remainingProcesses) {
-            Write-Host "  - $($process.Name) (PID: $($process.Id))" -ForegroundColor Red
+            try {
+                $process | Stop-Process -Force -ErrorAction Stop
+                Write-Host "  Successfully closed $($process.Name)." -ForegroundColor Green
+            }
+            catch {
+                Write-Host "  Failed to close $($process.Name): $($_.Exception.Message)" -ForegroundColor Red
+            }
         }
+        # Re-check for any remaining processes
+        Start-Sleep -Seconds 15
+        $remainingProcesses = Get-Process | Where-Object { $officeProcesses -contains $_.Name }
+        if ($remainingProcesses.Count -eq 0) {
+            Write-Host "All Office processes have been successfully closed." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Some Office processes are still running:" -ForegroundColor Red
+                    # List any remaining processes
+            foreach ($process in $remainingProcesses) {
+                Write-Host "  - $($process.Name) (PID: $($process.Id))" -ForegroundColor Red
+            }
+        }
+
     }
     else {
         Write-Host "`nAll Office processes have been successfully closed." -ForegroundColor Green
     }
 }
+
+
+# Open Excel just to make sure it's working properly and to see if opening it 
+# will cause registry entries to be created
+# Create a new Excel application
+$excelApp = New-Object -ComObject Excel.Application
+
+# Set it to nothing
+$excelApp = $null
 
 # Execute the function
 Close-OfficeProcesses

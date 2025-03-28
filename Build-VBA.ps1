@@ -78,7 +78,7 @@ if (Test-Path $moduleFolder) {
                         $vbProject = $wb.VBProject
 
                         if ($null -eq $vbProject) {
-                            Write-Host "VBProject is still not accessible after re-opening Excel. Retrying..."
+                            Write-Host "VBProject is still not accessible after re-opening Excel."
                             # Throw an error to trigger the catch block
                             exit 1
                         } else {
