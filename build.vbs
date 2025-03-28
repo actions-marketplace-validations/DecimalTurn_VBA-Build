@@ -10,9 +10,22 @@ destFolder = "\"
 ' Create a FileSystemObject
 set fso = CreateObject("Scripting.FileSystemObject")
 
-'Zip the source folder by running node zip.js
+' Zip the source folder by running node zip.js
 ' This assumes you have Node.js installed and the zip.js script is in the same directory
-Shell "node zip.js "
+dim shell, exitCode
+set shell = CreateObject("WScript.Shell")
+
+' Run the Node.js script and capture the exit code
+exitCode = shell.Run("node zip.js", 0, True)
+
+' Check if the Node.js script executed successfully
+if exitCode <> 0 then
+    WScript.Echo "Error: Failed to execute zip.js. Exit code: " & exitCode
+    WScript.Quit 1
+end if
+
+' Clean up
+set shell = nothing
 
 'Rename the file from Excel_Skeleton.zip in the current dir to Excel_Skeleton.xlsm
 zipFile = "Excel_Skeleton.zip"
