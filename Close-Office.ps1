@@ -1,7 +1,5 @@
 # This script will list all the process that are part of the Office suite (and generic Office processes) and close them.
-
 # It will also check if the processes are running and close them if they are.
-# This is the code.
 
 # Define an array of Office-related process names
 $officeProcesses = @(

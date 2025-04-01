@@ -1,3 +1,5 @@
+# Enable access to the VBA project object model
+
 function List-RegistrySubKeysRecursively ($Path) {
     if (-not (Test-Path $Path)) {
         Write-Output "Error: The registry path '$Path' does not exist."

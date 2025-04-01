@@ -1,7 +1,7 @@
 # Summary:
 # This PowerShell script automates the process of importing VBA modules into an Excel workbook.
 # It retrieves the current working directory, constructs the path to the Excel file,
-# and imports all .bas files from a specified module folder into the workbook.
+# and imports all .bas files from a specified folder into the workbook.
 # It then saves and closes the workbook, and cleans up the COM objects.
 
 # Get the current working directory

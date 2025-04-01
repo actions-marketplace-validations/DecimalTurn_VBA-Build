@@ -1,7 +1,7 @@
 # https://github.com/durs/node-activex/blob/d7a13a0b030af1783779be3b39f4672d1f26569c/.github/workflows/ci.yml#L23
 # https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-nodejs
 
-name: ci
+name: Build VBA
 on:
   - push
   - pull_request
@@ -9,7 +9,7 @@ on:
 permissions:
   contents: write
 jobs:
-  ci:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -18,20 +18,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      #- uses: actions/setup-node@v4
-      #  with:
-      #    node-version: ${{ matrix.node-version }}
-      #- run: npm ci
-      #- run: npm run build --if-present
       - name: "Install 7zip"
         run: choco install 7zip.install
       # https://community.chocolatey.org/packages?q=Excel
-      - name: "Installing Office 365 takes about 5 minutes..."
+      - name: "Installing Office 365 (takes about 5 minutes...)"
         run: choco install office365proplus -y
-      #- name: "Run node script (zip extraction)"
-      #  run: node ./zip.js
-      # We need to zip the content of the follder src/XMLsource (it contains files and folders with subfolders)
-      - name: "Run PowerShell script (zip creation, enable VBOM and import VBA)"
+      - name: "VBA Build Script (zip creation, enable VBOM and import VBA)"
         shell: pwsh
         run: | 
           Write-Host "Current directory: $(pwd)"
@@ -44,9 +36,9 @@ jobs:
           Write-Host "Enabling VBOM (Visual Basic for Applications Object Model)"
           . ./Enable-VBOM.ps1
           Write-Host "========================="
-          Write-Host "Importing VBA code"
+          Write-Host "Importing VBA code into Office document"
           . ./Build-VBA.ps1
-      - name: Push content
+      - name: "Push content"
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
