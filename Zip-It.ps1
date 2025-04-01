@@ -6,8 +6,8 @@ $currentDir = Get-Location
 Write-Host "Current directory: $currentDir"
 
 # Define the source folder and the output zip file
-$sourceFolder = "src/skeleton.xlsm/XMLsource/"
-$outputZipFile = "src/skeleton.xlsm/XMLoutput/skeleton.zip"
+$sourceFolder = Join-Path -Path $currentDir -ChildPath "src/skeleton.xlsm/XMLsource/"
+$outputZipFile = Join-Path -Path $currentDir -ChildPath "src/skeleton.xlsm/XMLoutput/skeleton.zip"
 
 # Path to the 7-Zip executable
 $sevenZipPath = "7z"  # Assumes 7-Zip is in the system PATH. Adjust if necessary.
