@@ -6,8 +6,7 @@ runs:
   steps:
     - name: "Run VBA Build"
       shell: pwsh
-      run: |
-        .\Main.ps1
+      run: '${{ github.action_path }}\Main.ps1'
 outputs:
   result:
     description: "The result of the VBA build process."
