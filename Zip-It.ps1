@@ -15,6 +15,7 @@ $sevenZipPath = "7z"  # Assumes 7-Zip is in the system PATH. Adjust if necessary
 # Check if the source folder exists
 if (-not (Test-Path $sourceFolder)) {
     Write-Host "Source folder not found: $sourceFolder"
+    ls
     exit 1
 }
 
