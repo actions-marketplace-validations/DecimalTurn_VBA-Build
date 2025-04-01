@@ -30,7 +30,7 @@ jobs:
         run: choco install office365proplus -y
       #- name: "Run node script (zip extraction)"
       #  run: node ./zip.js
-      # We need to zip the content of the follder src/XMLSource (it contains files and folders with subfolders)
+      # We need to zip the content of the follder src/XMLsource (it contains files and folders with subfolders)
       - name: "Run PowerShell script (zip creation, enable VBOM and import VBA)"
         shell: pwsh
         run: | 
