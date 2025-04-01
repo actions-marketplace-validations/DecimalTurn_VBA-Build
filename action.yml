@@ -4,6 +4,11 @@ description: "Build VBA-enabled Office documents using GitHub Actions"
 runs:
   using: "composite"
   steps:
+    - name: "Install 7-zip"
+      run: choco install 7zip.install
+    # https://community.chocolatey.org/packages?q=Excel
+    - name: "Installing Office 365 takes about 5 minutes..."
+      run: choco install office365proplus -y
     - name: "Run VBA Build"
       shell: pwsh
       run: '${{ github.action_path }}\Main.ps1'
