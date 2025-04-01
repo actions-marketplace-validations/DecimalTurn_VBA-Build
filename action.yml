@@ -1,5 +1,9 @@
-name: "VBA Build Action"
-description: "Build VBA-enabled Office documents using GitHub Actions"
+name: "VBA Build"
+description: "Build VBA-Enabled Office documents from source code using GitHub Actions."
+
+branding:
+  icon: 'code'
+  color: 'blue' 
 
 runs:
   using: "composite"
