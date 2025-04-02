@@ -2,7 +2,7 @@
 
 For a demo on how to use this GitHub Action: [VBA-Build-Demo](https://github.com/DecimalTurn/VBA-Build-Demo)
 
-![Banner](https://github.com/DecimalTurn/VBA-Build/blob/Main/images/Banner.png?raw=true)
+![Banner](https://github.com/DecimalTurn/VBA-Build/blob/main/images/Banner.png?raw=true)
 
 ## How does it work?
 
