@@ -31,3 +31,12 @@ This could be used to:
 - Keep your VBA code in plain text format for version control
 - Automate builds as part of your CI/CD pipeline
 - Generate ready-to-use Office documents without manual intervention
+
+## What's next?
+
+Depending on the reaction of the community, I might add support for:
+
+- Access, Word and PowerPoint
+- Signature of the VBA Project (to facilitate distribution)
+- Forms and Classes
+- More complex file structure using [vba-block](https://www.vba-blocks.com/manifest/) configuration file (manifest file)
