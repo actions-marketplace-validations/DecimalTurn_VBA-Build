@@ -1,6 +1,8 @@
 # VBA-Build
 
-For a demo of how to use this GitHub Action: [VBA-Build-Demo](https://github.com/DecimalTurn/VBA-Build-Demo)
+For a demo on how to use this GitHub Action: [VBA-Build-Demo](https://github.com/DecimalTurn/VBA-Build-Demo)
+
+![Banner](https://github.com/DecimalTurn/VBA-Build/blob/Main/images/Banner.png?raw=true)
 
 ## How does it work?
 
