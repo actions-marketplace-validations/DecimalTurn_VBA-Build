@@ -1,0 +1,191 @@
+name: Test Build VBA
+on:
+  workflow_dispatch:
+    inputs:
+      run_checks:
+        description: 'Run checks on the build output'
+        required: false
+        type: boolean
+        default: false
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - dev*
+    paths-ignore:
+      - '**/README.md'
+      - '.gitattributes'
+      - '.devcontainer/**'
+
+permissions:
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        windows-version: [windows-2022, windows-2025]
+    runs-on: ${{ matrix.windows-version }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+      - name: "Build VBA-Enabled Documents (using own action)"
+        id: build_vba
+        uses: ./
+        with:
+          source-dir: "./tests"
+          test-framework: "rubberduck"
+        timeout-minutes: 20
+      - name: "Display Build Results"
+        shell: pwsh
+        run: |
+          Write-Host "Build completed with the following results:"
+          Write-Host "Processed folders: ${{ steps.build_vba.outputs.processed-folders }}"
+          Write-Host "Successful builds: ${{ steps.build_vba.outputs.successful-builds }}"
+          Write-Host "Office apps used: ${{ steps.build_vba.outputs.office-apps }}"
+          Write-Host "Access folders found: ${{ steps.build_vba.outputs.access-folders }}"
+          Write-Host "Has Access database: ${{ steps.build_vba.outputs.has-access-database }}"
+          if ("${{ steps.build_vba.outputs.has-access-database }}" -eq "True") {
+            Write-Host "✅ Access database(s) detected and will be processed!"
+          } else {
+            Write-Host "ℹ️ No Access databases found in source directory."
+          }
+      - name: "Upload Build Artifact"
+        uses: actions/upload-artifact@v5
+        id: "upload"
+        with:
+          name: "VBA-Enabled-Documents-${{ matrix.windows-version }}"
+          path: "./tests/out/*"
+          if-no-files-found: warn
+      - name: "Take exiting screenshot"
+        if: always()
+        run: |
+          . "./scripts/utils/Screenshot.ps1"
+          # Create the directory if it does not exist
+          if (!(Test-Path -Path ${{ github.workspace }}/tests/screenshots)) {
+            New-Item -ItemType Directory -Path ${{ github.workspace }}/tests/screenshots
+          }
+          # Minimize PowerShell window
+          . "./scripts/utils/Minimize.ps1"
+          Minimize-Window "Administrator: C:\Program Files\PowerShell\7\pwsh.EXE"
+          $windowsVersion = "${{ matrix.windows-version }}"
+          Take-Screenshot -OutputPath ${{ github.workspace }}/tests/screenshots/ExitScreenshot_$windowsVersion.png
+        shell: pwsh      
+      # TODO: Check if better method to visualize the screenshots: https://github.com/actions/upload-artifact/issues/14
+      - name: "Upload Screenshots"
+        # Run this step even if the build failed
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: "Screenshots-${{ matrix.windows-version }}"
+          path: "./tests/screenshots/*"
+          if-no-files-found: warn
+      - name: "Attestation"
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: "VBA-Enabled-Documents-${{ matrix.windows-version }}"
+          subject-digest: sha256:${{ steps.upload.outputs.artifact-digest }}
+  build-check:    
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        windows-version: [windows-2022, windows-2025]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+        
+      - name: "Download Build Artifact"
+        uses: actions/download-artifact@v6
+        with:
+          name: "Screenshots-${{ matrix.windows-version }}"
+          path: "./tests/screenshots"
+          
+      - name: "Check Screenshot Similarity"
+        run: |
+          # Install ImageMagick for image comparison
+          sudo apt-get update
+          sudo apt-get install -y imagemagick bc
+          
+          # Get Windows version from matrix
+          WINDOWS_VERSION="${{ matrix.windows-version }}"
+          echo "Checking screenshot for Windows version: $WINDOWS_VERSION"
+          
+          # Debug: Show directory structure to verify paths
+          echo "Current directory: $(pwd)"
+          echo "Contents of ./images directory:"
+          ls -la ./images || echo "images directory doesn't exist"
+          echo "Contents of ./images/fixtures directory:"
+          ls -la ./images/fixtures || echo "images/fixtures directory doesn't exist"
+          echo "Contents of ./tests/screenshots directory:"
+          ls -la ./tests/screenshots || echo "tests/screenshots directory doesn't exist"
+          
+          # Set filenames based on Windows version
+          REFERENCE_IMAGE="./images/fixtures/ExitScreenshot_${WINDOWS_VERSION}.png"
+          TEST_IMAGE="./tests/screenshots/ExitScreenshot_${WINDOWS_VERSION}.png"
+          
+          echo "Reference image path: $REFERENCE_IMAGE"
+          echo "Test image path: $TEST_IMAGE"
+          
+          # Check if reference image exists
+          if [ ! -f "$REFERENCE_IMAGE" ]; then
+            echo "Reference image $REFERENCE_IMAGE not found!"
+            # Create the directory structure if it doesn't exist
+            mkdir -p ./images/fixtures
+            # Copy the screenshot as a new reference if available
+            if [ -f "$TEST_IMAGE" ]; then
+              echo "Creating reference image from current screenshot"
+              cp "$TEST_IMAGE" "$REFERENCE_IMAGE"
+              echo "Reference image created. Skip comparison for this run."
+              exit 0
+            else
+              echo "No screenshot available to create a reference image"
+              exit 1
+            fi
+          fi
+          
+          # Check if test image exists
+          if [ ! -f "$TEST_IMAGE" ]; then
+            echo "Test image $TEST_IMAGE not found!"
+            exit 1
+          fi
+          
+          # Compare images and get similarity score
+          echo "Comparing screenshots..."
+          SIMILARITY=$(compare -metric RMSE "$REFERENCE_IMAGE" "$TEST_IMAGE" null: 2>&1) || true
+          
+          echo "Similarity output: $SIMILARITY"
+          
+          # Extract the numeric value from the similarity output
+          # The output typically looks like: "467.579 (0.0071348)" where 0.0071348 is the normalized value
+          # We want to extract that normalized value
+          NORMALIZED_VALUE=$(echo $SIMILARITY | grep -oE '\([0-9]+(\.[0-9]+)?\)' | tr -d '()')
+          
+          if [ -z "$NORMALIZED_VALUE" ]; then
+            echo "Failed to extract normalized value from similarity output"
+            # Fall back to the first numeric value if normalized value not found
+            VALUE=$(echo $SIMILARITY | grep -oE '[0-9]+(\.[0-9]+)?' | head -1)
+            if [ -z "$VALUE" ]; then
+              echo "Failed to extract any numeric value from similarity output"
+              exit 1
+            fi
+            echo "Using first numeric value: $VALUE"
+          else
+            VALUE=$NORMALIZED_VALUE
+            echo "Using normalized value: $VALUE"
+          fi
+          
+          # Fail if difference is too large
+          THRESHOLD=0.035
+          echo "Difference value: $VALUE (threshold: $THRESHOLD)"
+          
+          if (( $(echo "$VALUE > $THRESHOLD" | bc -l) )); then
+            echo "Screenshots differ significantly!"
+            exit 1
+          else
+            echo "Screenshots are similar enough."
+          fi
+        shell: bash
