@@ -27,11 +27,16 @@ jobs:
   build:
     strategy:
       matrix:
-        windows-version: [windows-2022, windows-2025]
+        windows-version: [windows-2025]
     runs-on: ${{ matrix.windows-version }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v6
+      - name: "Setup VBA runtime"
+        uses: DecimalTurn/setup-vba@75c6ce5e714186234ef9090c1c77537a60bd7339 # v0.1.1
+        with:
+          office-apps: "Excel,Word,PowerPoint,Access"
+          install-office: "true"
       - name: "Build VBA-Enabled Documents (using own action)"
         id: build_vba
         uses: ./
@@ -54,7 +59,7 @@ jobs:
             Write-Host "ℹ️ No Access databases found in source directory."
           }
       - name: "Upload Build Artifact"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         id: "upload"
         with:
           name: "VBA-Enabled-Documents-${{ matrix.windows-version }}"
@@ -78,13 +83,13 @@ jobs:
       - name: "Upload Screenshots"
         # Run this step even if the build failed
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: "Screenshots-${{ matrix.windows-version }}"
           path: "./tests/screenshots/*"
           if-no-files-found: warn
       - name: "Attestation"
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: "VBA-Enabled-Documents-${{ matrix.windows-version }}"
           subject-digest: sha256:${{ steps.upload.outputs.artifact-digest }}
@@ -93,13 +98,13 @@ jobs:
     needs: build
     strategy:
       matrix:
-        windows-version: [windows-2022, windows-2025]
+        windows-version: [windows-2025]
     steps:
       - name: "Checkout"
         uses: actions/checkout@v6
         
       - name: "Download Build Artifact"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: "Screenshots-${{ matrix.windows-version }}"
           path: "./tests/screenshots"
