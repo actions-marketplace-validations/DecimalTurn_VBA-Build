@@ -1,0 +1,125 @@
+name: Diff Access VCS Add-in Source
+
+on:
+  workflow_dispatch:
+    inputs:
+      url1:
+        description: 'Download URL for first add-in zip'
+        required: true
+      url2:
+        description: 'Download URL for second add-in zip'
+        required: true
+      label1:
+        description: 'Label for first add-in (used in output)'
+        required: false
+        default: 'addin1'
+      label2:
+        description: 'Label for second add-in (used in output)'
+        required: false
+        default: 'addin2'
+
+jobs:
+  diff:
+    runs-on: windows-2025
+    timeout-minutes: 15
+
+    steps:
+      - name: Setup Access
+        uses: DecimalTurn/setup-vba@v0
+        with:
+          office-apps: Access
+          install-office: true
+
+      - name: Download both releases
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "${{ inputs.label1 }}", "${{ inputs.label2 }}" -Force
+
+          Invoke-WebRequest "${{ inputs.url1 }}" -OutFile addin1.zip
+          Expand-Archive addin1.zip -DestinationPath "${{ inputs.label1 }}" -Force
+
+          Invoke-WebRequest "${{ inputs.url2 }}" -OutFile addin2.zip
+          Expand-Archive addin2.zip -DestinationPath "${{ inputs.label2 }}" -Force
+
+          Write-Host "${{ inputs.label1 }} files:"
+          Get-ChildItem "${{ inputs.label1 }}" | Select-Object Name, Length
+          Write-Host "${{ inputs.label2 }} files:"
+          Get-ChildItem "${{ inputs.label2 }}" | Select-Object Name, Length
+
+      - name: Install VCS add-in as export tool
+        shell: pwsh
+        run: |
+          $addinFolder = "$env:APPDATA\MSAccessVCS"
+          New-Item -ItemType Directory -Path $addinFolder -Force
+          Copy-Item "${{ inputs.label1 }}\Version Control.accda" "$addinFolder\Version Control.accda" -Force
+          Write-Host "Add-in installed to $addinFolder"
+
+      - name: Export VBA source using VCS add-in
+        shell: pwsh
+        run: |
+          $addinPath = "$env:APPDATA\MSAccessVCS\Version Control"
+
+          @(
+            @{Label="${{ inputs.label1 }}"; Path="${{ inputs.label1 }}\Version Control.accda"; OutDir="${{ inputs.label1 }}-source"},
+            @{Label="${{ inputs.label2 }}"; Path="${{ inputs.label2 }}\Version Control.accda"; OutDir="${{ inputs.label2 }}-source"}
+          ) | ForEach-Object {
+            New-Item -ItemType Directory -Path $_.OutDir -Force
+            $fullPath = Resolve-Path $_.Path
+            $expectedExport = Join-Path (Split-Path $fullPath) "Version Control.accda.src"
+
+            Write-Host "=== Exporting $($_.Label) ==="
+            $access = New-Object -ComObject Access.Application
+            $access.Visible = $false
+            $access.AutomationSecurity = 1
+            $access.OpenCurrentDatabase($fullPath)
+
+            Write-Host "Calling ExportSource..."
+            try {
+              $access.Run("$addinPath.SetInteractionMode", [ref] 1)
+              $access.Run("$addinPath.ExportSource", [ref] $true)
+              Start-Sleep -Seconds 60
+            } catch {
+              Write-Host "Export error: $_"
+            }
+
+            if (Test-Path $expectedExport) {
+              Copy-Item "$expectedExport\*" $_.OutDir -Recurse -Force
+              Write-Host "Copied $((Get-ChildItem $_.OutDir -Recurse -File).Count) files from $expectedExport"
+            } else {
+              Write-Host "Export not found at $expectedExport"
+            }
+
+            $access.Quit()
+            [System.Runtime.InteropServices.Marshal]::ReleaseComObject($access) | Out-Null
+            [GC]::Collect()
+            Start-Sleep -Seconds 5
+          }
+
+      - name: Git diff of exported source
+        shell: pwsh
+        run: |
+          cd "${{ inputs.label1 }}-source"
+          git init
+          git config user.name "diff-bot"
+          git config user.email "diff@bot"
+          git add -A
+          git commit -m "${{ inputs.label1 }}"
+
+          # Overlay second add-in's source
+          Copy-Item "../${{ inputs.label2 }}-source/*" . -Recurse -Force -ErrorAction SilentlyContinue
+
+          Write-Host "=== Files only in ${{ inputs.label1 }} (MISSING from ${{ inputs.label2 }}) ==="
+          git status --short | Where-Object { $_ -match '^\?\?' } | ForEach-Object { Write-Host "  $_" }
+
+          Write-Host ""
+          Write-Host "=== Files only in ${{ inputs.label2 }} (EXTRA in ${{ inputs.label2 }}) ==="
+          git status --short | Where-Object { $_ -match '^ D' } | ForEach-Object { Write-Host "  $_" }
+
+          Write-Host ""
+          Write-Host "=== Files that differ ==="
+          git add -A
+          git diff --stat --cached
+
+          Write-Host ""
+          Write-Host "=== Detailed diff (first 300 lines) ==="
+          git diff --cached | Select-Object -First 300
